@@ -1,2 +1,3 @@
-# drawer-quasar
-Autogenerate a drawer menu using Quasar Framework
+# Quasar App
+
+> WIP
