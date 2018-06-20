@@ -23,6 +23,7 @@
       </q-toolbar>
     </q-layout-header>
 
+    <drawer/>
     <!-- <q-layout-drawer
       v-model="leftDrawerOpen"
       :content-class="$q.theme === 'mat' ? 'bg-grey-2' : null"
@@ -32,7 +33,9 @@
         link
         inset-delimiter
       >
-        <q-list-header>Essential Links</q-list-header>
+        <q-list-header>
+          <q-search v-model="terms" placeholder="Start typing a country name"/>
+        </q-list-header>
         <q-item @click.native="openURL('http://quasar-framework.org')">
           <q-item-side icon="school" />
           <q-item-main label="Docs" sublabel="quasar-framework.org" />
@@ -54,47 +57,8 @@
           <q-item-main label="Twitter" sublabel="@quasarframework" />
         </q-item>
       </q-list>
-       <q-collapsible icon="inbox" label="Inbox" sublabel="Where your email is">
-    <q-item link to="/inbox/1">
-      <q-item-side icon="mail" />
-      <q-item-main label="Email 1" />
-    </q-item>
-    <q-item link to="/inbox/2">
-      <q-item-side icon="mail" />
-      <q-item-main label="Email 2" />
-    </q-item>
-    <q-collapsible icon="favorite" label="Favorites">
-      <q-item link to="/inbox/favorites/1">
-        <q-item-side icon="mail" />
-        <q-item-main label="Favorite 1" />
-      </q-item>
-      <q-item to="/inbox/favorites/2">
-        <q-item-side icon="mail" />
-        <q-item-main label="Favorite 2" />
-      </q-item>
-    </q-collapsible>
-    <q-item to="/inbox/3">
-      <q-item-side icon="mail" />
-      <q-item-main label="Email 3" />
-    </q-item>
-        <q-collapsible icon="favorite" label="Favorites">
-      <q-item link to="/inbox/favorites/1">
-        <q-item-side icon="mail" />
-        <q-item-main label="Favorite 1" />
-      </q-item>
-      <q-item to="/inbox/favorites/2">
-        <q-item-side icon="mail" />
-        <q-item-main label="Favorite 2" />
-      </q-item>
-    </q-collapsible>
-    <q-item to="/inbox/3">
-      <q-item-side icon="mail" />
-      <q-item-main label="Email 3" />
-    </q-item>
-  </q-collapsible>
-  </q-collapsible>
     </q-layout-drawer> -->
-    <drawer/>
+    
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -112,11 +76,18 @@ export default {
   },
   data () {
     return {
-      leftDrawerOpen: this.$q.platform.is.desktop
+      leftDrawerOpen: this.$q.platform.is.desktop,
+      terms: ''
     }
   },
   methods: {
-    openURL
+    openURL,
+    search () {
+      console.log('asdasd')
+    },
+    selected () {
+      console.log('aaaa')
+    }
   }
 }
 </script>
