@@ -4,7 +4,7 @@ import { openURL } from 'quasar'
 export default {
   name: 'LayoutDefault',
   data () {
-    return { 
+    return {
       menus: [
         {
             "label": "Home",
@@ -157,13 +157,14 @@ export default {
             "id": 16
         }
       ],
+      filtered: [ ],
       enabled: true
     }
   },
   render (createElement) {
     let layoutDrawer = createElement('q-layout-drawer', {
       props: {
-        value: this.enabled
+        value: true
       },
     })
 
@@ -173,10 +174,10 @@ export default {
           link: true
         },
       },[
-        createElement('q-list-header', 'Essential Links')
+        this.generateHeader(createElement)
       ])
     
-    this.menus.forEach(menu => {
+    this.filtered.forEach(menu => {
       if (menu.children) {
         list.componentOptions.children.push(this.generateGroupMenu(createElement, menu))
       } else {
@@ -191,14 +192,21 @@ export default {
   },
   methods: {
     generateGroupMenu (createElement, menu) {
-      let collapsible = createElement('q-collapsible', {
-        props: {
-          icon: (menu.icon) ? menu.icon : undefined,
-          label: menu.label,
-          link: true,
-          separator: true
-        },
-      })
+      let props = {
+        icon: (menu.icon) ? menu.icon : undefined,
+        label: menu.label,
+        link: true,
+        separator: true
+      }
+
+      let collapsible = createElement('q-collapsible', { props: props })
+
+      setTimeout(() => {
+        if (menu.opened)
+          collapsible.componentInstance.show()
+        else
+          collapsible.componentInstance.hide()
+      }, 500)
 
       collapsible.componentOptions.children = [ ]
 
@@ -211,6 +219,21 @@ export default {
       });
 
       return collapsible
+    },
+    generateHeader (createElement) {
+      let header = createElement('q-list-header', [
+        createElement('q-search', {
+          on: {
+            input: this.search
+          },
+          props: {
+            placeholder: 'Search the menu',
+            value: this.filter
+          },
+        })
+      ])
+
+      return header
     },
     generateMenu (createElement, menu) {
       let item = createElement('q-item', {
@@ -246,7 +269,50 @@ export default {
         item.componentOptions.children.push(itemMain)
 
       return item
+    },
+    filterMenu (menu, filter) {
+      if (menu.label.toLowerCase().lastIndexOf(filter.toLowerCase()) >= 0) {
+        return menu
+      } else {
+        if (menu.children) {
+          let filteredChildren = [ ]
+
+          menu.children.forEach(child => {
+            const filteredMenu = this.filterMenu(child, filter)
+
+            if (filteredMenu) filteredChildren.push(filteredMenu)
+          })
+
+          menu.children = filteredChildren
+
+          if ((filteredChildren.length > 0) ) {
+            menu.opened = true
+             return menu
+          }
+        }
+      }
+
+      return null
+    },
+    clone (object) {
+      return JSON.parse(JSON.stringify(object))
+    },
+    search (filter) {
+      if (filter) {
+        this.filtered = [ ]
+
+        this.menus.forEach(menu => {
+          const filteredMenu = this.filterMenu(this.clone(menu), filter)
+
+          if (filteredMenu) this.filtered.push(filteredMenu)
+        })        
+      } else this.filtered = this.clone(this.menus)
+
+      this.$forceUpdate()
     }
+  },
+  created () {
+    this.filtered = this.clone(this.menus)
   }
 }
 </script>
