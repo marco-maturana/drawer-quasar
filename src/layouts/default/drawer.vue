@@ -164,7 +164,7 @@ export default {
   render (createElement) {
     let layoutDrawer = createElement('q-layout-drawer', {
       props: {
-        value: true
+        value: this.enabled
       },
     })
 
@@ -181,7 +181,8 @@ export default {
       if (menu.children) {
         list.componentOptions.children.push(this.generateGroupMenu(createElement, menu))
       } else {
-        list.componentOptions.children.push(this.generateMenu(createElement, menu))
+        const newMenu = this.generateMenu(createElement, menu)
+        if (newMenu) list.componentOptions.children.push(newMenu)
       }
     });
 
@@ -202,7 +203,7 @@ export default {
       let collapsible = createElement('q-collapsible', { props: props })
 
       setTimeout(() => {
-        if (menu.opened)
+        if (menu.opened && collapsible.componentInstance)
           collapsible.componentInstance.show()
         else
           collapsible.componentInstance.hide()
@@ -214,7 +215,8 @@ export default {
         if (child.children) {
           collapsible.componentOptions.children.push(this.generateGroupMenu(createElement, child))
         } else {
-          collapsible.componentOptions.children.push(this.generateMenu(createElement, child))
+          const newMenu = this.generateMenu(createElement, child)
+          if (newMenu) collapsible.componentOptions.children.push(newMenu)
         }
       });
 
@@ -236,6 +238,9 @@ export default {
       return header
     },
     generateMenu (createElement, menu) {
+      if (!menu.url)
+        return null
+
       let item = createElement('q-item', {
         props: {
           to: menu.url,
